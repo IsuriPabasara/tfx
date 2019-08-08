@@ -92,9 +92,7 @@ class AirflowHandler(base_handler.BaseHandler):
         self.flags_dict[labels.PIPELINE_NAME])
 
     # Check if pipeline exists.
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
 
     # Delete pipeline folder.
     io_utils.delete_dir(handler_pipeline_path)
@@ -114,11 +112,7 @@ class AirflowHandler(base_handler.BaseHandler):
   def create_run(self) -> None:
     """Trigger DAG in Airflow."""
     # Check if pipeline exists.
-    handler_pipeline_path = self._get_handler_pipeline_path(
-        self.flags_dict[labels.PIPELINE_NAME])
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
 
     # Unpause DAG.
     self._subprocess_call(
@@ -142,22 +136,16 @@ class AirflowHandler(base_handler.BaseHandler):
   def list_runs(self) -> None:
     """Lists all runs of a pipeline in Airflow."""
     # Check if pipeline exists.
-    handler_pipeline_path = self._get_handler_pipeline_path(
-        self.flags_dict[labels.PIPELINE_NAME])
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
     self._subprocess_call(
         ['airflow', 'list_dag_runs', self.flags_dict[labels.PIPELINE_NAME]])
 
   def get_run(self) -> None:
     """Checks run status in Airflow."""
     # Check if pipeline exists.
-    handler_pipeline_path = self._get_handler_pipeline_path(
-        self.flags_dict[labels.PIPELINE_NAME])
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
+
+    # Get status of all DAG runs.
     dag_runs_list = str(
         subprocess.check_output(
             ['airflow', 'list_dag_runs',
@@ -169,6 +157,7 @@ class AirflowHandler(base_handler.BaseHandler):
       if self.flags_dict[labels.RUN_ID] in line:
         click.echo('run_id :' + tokens[1])
         click.echo('state :' + tokens[2])
+        break
 
   def _save_pipeline(self, pipeline_args: Dict[Text, Any]) -> None:
     """Creates/updates pipeline folder in the handler directory."""
@@ -195,15 +184,3 @@ class AirflowHandler(base_handler.BaseHandler):
             os.path.basename(self.flags_dict[labels.PIPELINE_DSL_PATH])
             )
         )
-
-  def _get_handler_pipeline_path(self, pipeline_name: Text) -> Text:
-    """Path to pipeline folder in airflow.
-
-    Args:
-      pipeline_name: name of the pipeline
-
-    Returns:
-      Path to pipeline folder in airflow.
-    """
-    # Path to pipeline folder in airflow.
-    return os.path.join(self._handler_home_dir, 'dags', pipeline_name)

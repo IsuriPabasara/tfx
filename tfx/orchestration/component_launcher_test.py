@@ -32,7 +32,6 @@ from tfx.orchestration import data_types
 from tfx.orchestration import publisher
 from tfx.types import artifact_utils
 from tfx.types import channel_utils
-from tfx.types import component_spec
 
 
 class _FakeDriver(base_driver.BaseDriver):
@@ -66,10 +65,10 @@ class _FakeExecutor(base_executor.BaseExecutor):
     tf.gfile.Copy(input_path, output_path)
 
 
-class _FakeComponentSpec(types.ComponentSpec):
+class _FakeComponentSpec(base_component.ComponentSpec):
   PARAMETERS = {}
-  INPUTS = {'input': component_spec.ChannelParameter(type_name='InputPath')}
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='OutputPath')}
+  INPUTS = {'input': base_component.ChannelParameter(type_name='InputPath')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='OutputPath')}
 
 
 class _FakeComponent(base_component.BaseComponent):

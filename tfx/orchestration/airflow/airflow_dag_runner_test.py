@@ -25,55 +25,54 @@ from tfx.components.base import base_component
 from tfx.components.base import base_executor
 from tfx.orchestration import pipeline
 from tfx.orchestration.airflow import airflow_dag_runner
-from tfx.types import component_spec
 
 
-class _FakeComponentSpecA(types.ComponentSpec):
+class _FakeComponentSpecA(base_component.ComponentSpec):
   PARAMETERS = {}
   INPUTS = {}
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='a')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='a')}
 
 
-class _FakeComponentSpecB(types.ComponentSpec):
+class _FakeComponentSpecB(base_component.ComponentSpec):
   PARAMETERS = {}
-  INPUTS = {'a': component_spec.ChannelParameter(type_name='a')}
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='b')}
+  INPUTS = {'a': base_component.ChannelParameter(type_name='a')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='b')}
 
 
-class _FakeComponentSpecC(types.ComponentSpec):
-  PARAMETERS = {}
-  INPUTS = {
-      'a': component_spec.ChannelParameter(type_name='a'),
-      'b': component_spec.ChannelParameter(type_name='b')
-  }
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='c')}
-
-
-class _FakeComponentSpecD(types.ComponentSpec):
+class _FakeComponentSpecC(base_component.ComponentSpec):
   PARAMETERS = {}
   INPUTS = {
-      'b': component_spec.ChannelParameter(type_name='b'),
-      'c': component_spec.ChannelParameter(type_name='c'),
+      'a': base_component.ChannelParameter(type_name='a'),
+      'b': base_component.ChannelParameter(type_name='b')
   }
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='d')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='c')}
 
 
-class _FakeComponentSpecE(types.ComponentSpec):
+class _FakeComponentSpecD(base_component.ComponentSpec):
   PARAMETERS = {}
   INPUTS = {
-      'a': component_spec.ChannelParameter(type_name='a'),
-      'b': component_spec.ChannelParameter(type_name='b'),
-      'd': component_spec.ChannelParameter(type_name='d'),
+      'b': base_component.ChannelParameter(type_name='b'),
+      'c': base_component.ChannelParameter(type_name='c'),
   }
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='e')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='d')}
+
+
+class _FakeComponentSpecE(base_component.ComponentSpec):
+  PARAMETERS = {}
+  INPUTS = {
+      'a': base_component.ChannelParameter(type_name='a'),
+      'b': base_component.ChannelParameter(type_name='b'),
+      'd': base_component.ChannelParameter(type_name='d'),
+  }
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='e')}
 
 
 class _FakeComponent(base_component.BaseComponent):
 
-  SPEC_CLASS = types.ComponentSpec
+  SPEC_CLASS = base_component.ComponentSpec
   EXECUTOR_CLASS = base_executor.BaseExecutor
 
-  def __init__(self, spec: types.ComponentSpec):
+  def __init__(self, spec: base_component.ComponentSpec):
     component_name = spec.__class__.__name__.replace(
         '_FakeComponentSpec', '_FakeComponent')
     super(_FakeComponent, self).__init__(

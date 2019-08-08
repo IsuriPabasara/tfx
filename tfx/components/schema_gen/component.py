@@ -20,10 +20,22 @@ from typing import Optional, Text
 
 from tfx import types
 from tfx.components.base import base_component
+from tfx.components.base.base_component import ChannelParameter
 from tfx.components.schema_gen import executor
 from tfx.types import channel_utils
 from tfx.types import standard_artifacts
-from tfx.types.standard_component_specs import SchemaGenSpec
+
+
+class SchemaGenSpec(base_component.ComponentSpec):
+  """SchemaGen component spec."""
+
+  PARAMETERS = {}
+  INPUTS = {
+      'stats': ChannelParameter(type=standard_artifacts.ExampleStatistics),
+  }
+  OUTPUTS = {
+      'output': ChannelParameter(type=standard_artifacts.Schema),
+  }
 
 
 class SchemaGen(base_component.BaseComponent):

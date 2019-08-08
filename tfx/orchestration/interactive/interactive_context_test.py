@@ -24,14 +24,13 @@ from tfx import types
 from tfx.components.base import base_component
 from tfx.components.base import base_executor
 from tfx.orchestration.interactive import interactive_context
-from tfx.types import component_spec
 
 
 class InteractiveContextTest(tf.test.TestCase):
 
   def testBasicRun(self):
 
-    class _FakeComponentSpec(types.ComponentSpec):
+    class _FakeComponentSpec(base_component.ComponentSpec):
       COMPONENT_NAME = '_FakeComponent'
       PARAMETERS = {}
       INPUTS = {}
@@ -49,7 +48,7 @@ class InteractiveContextTest(tf.test.TestCase):
       SPEC_CLASS = _FakeComponentSpec
       EXECUTOR_CLASS = _FakeExecutor
 
-      def __init__(self, spec: types.ComponentSpec):
+      def __init__(self, spec: base_component.ComponentSpec):
         super(_FakeComponent, self).__init__(spec=spec)
 
     c = interactive_context.InteractiveContext()
@@ -59,10 +58,12 @@ class InteractiveContextTest(tf.test.TestCase):
 
   def testUnresolvedChannel(self):
 
-    class _FakeComponentSpec(types.ComponentSpec):
+    class _FakeComponentSpec(base_component.ComponentSpec):
       COMPONENT_NAME = '_FakeComponent'
       PARAMETERS = {}
-      INPUTS = {'input': component_spec.ChannelParameter(type_name='Foo')}
+      INPUTS = {
+          'input': base_component.ChannelParameter(type_name='Foo')
+      }
       OUTPUTS = {}
 
     class _FakeExecutor(base_executor.BaseExecutor):
@@ -77,7 +78,7 @@ class InteractiveContextTest(tf.test.TestCase):
       SPEC_CLASS = _FakeComponentSpec
       EXECUTOR_CLASS = _FakeExecutor
 
-      def __init__(self, spec: types.ComponentSpec):
+      def __init__(self, spec: base_component.ComponentSpec):
         super(_FakeComponent, self).__init__(spec=spec)
 
     c = interactive_context.InteractiveContext()

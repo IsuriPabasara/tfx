@@ -89,9 +89,7 @@ class BeamHandler(base_handler.BaseHandler):
         self.flags_dict[labels.PIPELINE_NAME])
 
     # Check if pipeline exists.
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
 
     # Delete pipeline folder.
     io_utils.delete_dir(handler_pipeline_path)
@@ -111,14 +109,8 @@ class BeamHandler(base_handler.BaseHandler):
   def create_run(self) -> None:
     """Runs a pipeline in Beam."""
 
-    # Path to pipeline folder.
-    handler_pipeline_path = self._get_handler_pipeline_path(
-        self.flags_dict[labels.PIPELINE_NAME])
-
     # Check if pipeline exists.
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
 
     # Get dsl path from pipeline args.
     pipeline_args_path = os.path.join(self._handler_home_dir,
@@ -167,15 +159,3 @@ class BeamHandler(base_handler.BaseHandler):
     with open(os.path.join(handler_pipeline_path, 'pipeline_args.json'),
               'w') as f:
       json.dump(pipeline_args, f)
-
-  def _get_handler_pipeline_path(self, pipeline_name: Text) -> Text:
-    """Path to pipeline folder in beam.
-
-    Args:
-      pipeline_name: name of the pipeline
-
-    Returns:
-      Path to pipeline folder in beam.
-    """
-    # Path to pipeline folder in beam.
-    return os.path.join(self._handler_home_dir, pipeline_name)

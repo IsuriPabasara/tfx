@@ -29,23 +29,22 @@ from tfx.components.base import base_executor
 from tfx.orchestration import data_types
 from tfx.orchestration import metadata
 from tfx.orchestration.airflow import airflow_component
-from tfx.types import component_spec
 
 
-class _FakeComponentSpec(types.ComponentSpec):
+class _FakeComponentSpec(base_component.ComponentSpec):
   PARAMETERS = {}
   INPUTS = {
-      'input': component_spec.ChannelParameter(type_name='type_a'),
+      'input': base_component.ChannelParameter(type_name='type_a'),
   }
-  OUTPUTS = {'output': component_spec.ChannelParameter(type_name='type_b')}
+  OUTPUTS = {'output': base_component.ChannelParameter(type_name='type_b')}
 
 
 class _FakeComponent(base_component.BaseComponent):
 
-  SPEC_CLASS = types.ComponentSpec
+  SPEC_CLASS = base_component.ComponentSpec
   EXECUTOR_CLASS = base_executor.BaseExecutor
 
-  def __init__(self, spec: types.ComponentSpec):
+  def __init__(self, spec: base_component.ComponentSpec):
     super(_FakeComponent, self).__init__(spec=spec)
 
 

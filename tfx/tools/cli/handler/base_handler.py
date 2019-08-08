@@ -33,9 +33,8 @@ from tfx.tools.cli import labels
 from tfx.utils import io_utils
 
 
-# TODO(b/132286477): Check if _check_pipeline_folder, _get_handler_home and
-# _get_handler_pipeline_path can be shifted to base_handler after all handlers
-# are implemented.
+# TODO(b/132286477): Check if _check_pipeline_folder can be shifted to
+# base_handler after all handlers are implemented.
 class BaseHandler(with_metaclass(abc.ABCMeta, object)):
   """Base Handler for CLI.
 
@@ -172,3 +171,26 @@ class BaseHandler(with_metaclass(abc.ABCMeta, object)):
     return_code = subprocess.call(command, env=env)
     if return_code != 0:
       sys.exit('Error while running "{}" '.format(' '.join(command)))
+
+  def _get_handler_pipeline_path(self, pipeline_name: Text) -> Text:
+    """Path to pipeline folder for a given engine.
+
+    Args:
+      pipeline_name: name of the pipeline
+
+    Returns:
+      Path to pipeline folder.
+    """
+    if self.flags_dict[labels.ENGINE_FLAG] == 'airflow':
+      return os.path.join(
+          self._get_handler_home(self.flags_dict[labels.ENGINE_FLAG]), 'dags',
+          pipeline_name, '')
+    return os.path.join(
+        self._get_handler_home(self.flags_dict[labels.ENGINE_FLAG]),
+        pipeline_name, '')
+
+  def _check_pipeline_folder(self, pipeline_name: Text) -> None:
+    """Check if pipeline folder exists and if not, exit system."""
+    handler_pipeline_path = self._get_handler_pipeline_path(pipeline_name)
+    if not tf.io.gfile.exists(handler_pipeline_path):
+      sys.exit('Pipeline "{}" does not exist.'.format(pipeline_name))

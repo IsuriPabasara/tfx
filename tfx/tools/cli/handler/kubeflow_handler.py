@@ -219,18 +219,6 @@ class KubeflowHandler(base_handler.BaseHandler):
     except kfp_server_api.rest.ApiException as err:  # pylint: disable=broad-except
       sys.exit(self._print_error(err))
 
-  def _get_handler_pipeline_path(self, pipeline_name: Text) -> Text:
-    """Path to pipeline folder in Kubeflow.
-
-    Args:
-      pipeline_name: name of the pipeline
-
-    Returns:
-      Path to pipeline folder in Kubeflow.
-    """
-    # Path to pipeline folder in Kubeflow.
-    return os.path.join(self._handler_home_dir, pipeline_name, '')
-
   def _save_pipeline(self, pipeline_args: Dict[Text, Any]) -> None:
     """Creates/updates pipeline folder in the handler directory."""
 
@@ -295,9 +283,7 @@ class KubeflowHandler(base_handler.BaseHandler):
     handler_pipeline_path = self._get_handler_pipeline_path(pipeline_name)
 
     # Check if pipeline exists.
-    if not tf.io.gfile.exists(handler_pipeline_path):
-      sys.exit('Pipeline "{}" does not exist.'.format(
-          self.flags_dict[labels.PIPELINE_NAME]))
+    self._check_pipeline_folder(self.flags_dict[labels.PIPELINE_NAME])
 
     # Path to pipeline_args.json .
     pipeline_args_path = os.path.join(handler_pipeline_path,
